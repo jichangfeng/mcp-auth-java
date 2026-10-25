@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: auth-server
+
+  datasource:
+    # 注意：./data 是相对进程启动时的工作目录（不是项目目录）。
+    # 请统一在仓库根目录用 java -jar 启动，数据落在 <仓库根>/data/；
+    # 若用 mvn spring-boot:run 或 IDE 从 auth-server 模块启动，会落到 auth-server/data/，
+    # 与 jar 启动的库不互通，造成客户端注册丢失的假象。
+    url: jdbc:h2:file:./data/mcp-auth-clients
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ""
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+      schema-locations: classpath:org/springframework/security/oauth2/server/authorization/client/oauth2-registered-client-schema.sql
+
+  security:
+    # /login 表单页的登录用户（资源所有者），仅本地开发用。
+    # 不配置时 Boot 会生成随机密码并打印在启动日志（Using generated security password）
+    user:
+      name: user
+      password: "dev-123456"
+
+server:
+  port: 9000
+  servlet:
+    session:
+      cookie:
+        name: AUTHORIZATION_SERVER_SESSIONID
+
+logging:
+  # 同时输出到控制台和 ./logs/auth-server.log（./ 相对进程启动目录）。
+  # 默认滚动策略：单文件 10MB，保留 7 天。
+  file:
+    name: ./logs/auth-server.log
+  level:
+    org.springframework.security: INFO

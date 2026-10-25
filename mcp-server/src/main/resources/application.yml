@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: mcp-server
+
+  ai:
+    mcp:
+      server:
+        # MCP Server：Streamable HTTP 传输（WebMVC）
+        name: mcp-demo-server
+        protocol: STREAMABLE
+        type: SYNC
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          # RS 无需配置签名密钥：验签用的公钥自动从 AS 的 JWKS 端点（issuer + /oauth2/jwks）拉取
+          issuer-uri: http://localhost:9000
+
+server:
+  port: 8001
+  servlet:
+    session:
+      cookie:
+        name: MCP_SERVER_SESSIONID
+
+logging:
+  # 同时输出到控制台和 ./logs/mcp-server.log（./ 相对进程启动目录），默认滚动：单文件 10MB、保留 7 天
+  file:
+    name: ./logs/mcp-server.log
+  level:
+    org.springframework.security: INFO
