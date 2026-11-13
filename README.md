@@ -2,7 +2,7 @@
 
 基于 Spring AI 与 Spring Authorization Server 实现的带 OAuth2 授权保护的 MCP（Model Context Protocol）服务器演示项目。
 
-项目整体模仿 [python-sdk 的 simple-auth 示例](https://github.com/modelcontextprotocol/python-sdk)，将 Python 版本的功能用 Java 复刻：一个独立的授权服务器（Authorization Server）+ 一个受 OAuth2 保护的 MCP 服务器（Resource Server），支持 MCP 客户端（如 Qoder、MCP Inspector）通过动态客户端注册（DCR）+ PKCE 授权码流程完成授权后访问 MCP 工具。
+项目整体模仿 [python-sdk 的 simple-auth 示例](https://github.com/modelcontextprotocol/python-sdk)，将 Python 版本的功能用 Java 复刻：一个独立的授权服务器（Authorization Server）+ 一个受 OAuth2 保护的 MCP 服务器（Resource Server），支持 MCP 客户端（如 MCP Inspector、Qoder、WorkBuddy）通过动态客户端注册（DCR）+ PKCE 授权码流程完成授权后访问 MCP 工具。
 
 > 声明：这是一个**演示/学习项目**，仅实现了本地 HTTP 明文环境下的最小功能，不适用于生产环境（生产需要 HTTPS、独立用户体系、持久化数据库、DCR 防护等，见文末）。
 
@@ -54,7 +54,7 @@ java -jar mcp-server\target\mcp-server-0.0.1-SNAPSHOT.jar
 
 ## 配置 MCP 客户端（以 Qoder 为例）
 
-在 Qoder 的 MCP 配置（`.qoder-cn/mcp.json`）中添加：
+在 Qoder 的 MCP 配置（`.qoder/mcp.json`）中添加：
 
 ```json
 {
@@ -68,6 +68,8 @@ java -jar mcp-server\target\mcp-server-0.0.1-SNAPSHOT.jar
 ```
 
 首次连接时 Qoder 会自动完成：读取 RS 的受保护资源元数据 → 发现 AS → 动态注册客户端（DCR）→ 跳转浏览器登录（`user / dev-123456`）→ PKCE 授权 → 拿到 access_token 访问 MCP。MCP Inspector 等其他支持 OAuth 的客户端流程相同。
+
+想看清每一步的具体 HTTP 报文（或自己实现 MCP 客户端时对照调试），见 **[docs/authorization-flow.md](docs/authorization-flow.md)**——完整的动态客户端注册与授权六步流程，含请求/响应示例、PKCE、流程图与要点备忘。
 
 ## 设计要点
 
