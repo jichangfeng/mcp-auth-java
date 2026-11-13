@@ -61,7 +61,10 @@ class JwkConfiguration {
 					.keyID(UUID.randomUUID().toString())
 					.build();
 			Files.createDirectories(KEY_FILE.getParent());
-			Files.writeString(KEY_FILE, new JWKSet(jwk).toString());
+			// 注意：toString() 默认只写公开参数（publicParamsOnly=true），
+			// 会把私钥丢掉，导致重启后无法签发 token（Expected private JWK），
+			// 必须用 toString(false) 把私钥一起持久化。
+			Files.writeString(KEY_FILE, new JWKSet(jwk).toString(false));
 			log.info("已生成并持久化新的 AS 签名密钥: {}", KEY_FILE.toAbsolutePath());
 			return new JWKSet(jwk);
 		}
