@@ -89,7 +89,7 @@ Content-Type: application/json
 
 > `token_endpoint_auth_method: "none"` 表示公共客户端（配合 PKCE）；若服务器要求机密客户端，改为 `client_secret_post` 或 `client_secret_basic`。
 >
-> 本项目注意：注册请求、授权请求**都不要传 `scope`**。DCR 请求带 scope 会被拒绝（`Invalid Client Registration: scope`）；DCR 客户端没有分配任何 scope，授权请求带 scope 会报 `invalid_scope`。
+> 本项目注意：注册请求、授权请求**都不要传 `scope`**。授权请求带 scope 会报 `invalid_scope`（DCR 客户端没有分配任何 scope）；DCR 请求带**非空** scope 会被拒绝（`Invalid Client Registration: scope`），空字符串 scope（MCP Inspector 会发 `"scope": ""`）由兼容过滤器自动剔除后放行。
 
 响应：
 
@@ -240,7 +240,7 @@ grant_type=refresh_token
 | 1 | 资源地址 | 401 头的 `resource_metadata` 是下一步 URL |
 | 2 | 401 指示的 URL | 取 `authorization_servers[0]` |
 | 3 | `.well-known/oauth-authorization-server` | 取注册/授权/token 端点 |
-| 4 | 元数据 `registration_endpoint` | POST JSON，拿 `client_id`；请求不带 `scope` |
+| 4 | 元数据 `registration_endpoint` | POST JSON，拿 `client_id`；不要传 scope（空 scope 会被兼容过滤器剔除） |
 | 5A | 元数据 `authorization_endpoint` | 浏览器跳转，带 PKCE + state；不传 `scope` |
 | 5B | 元数据 `token_endpoint` | 后端 POST，带 `code_verifier`；本项目 8h、无 refresh_token |
 | 6 | 资源地址 | `Authorization: Bearer` |

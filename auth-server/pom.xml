@@ -18,6 +18,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
+		<!-- Boot 4 模块化后 webmvc starter 不再自带 jackson-databind，
+		     DCR 空 scope 兼容过滤器（EmptyScopeToleranceFilter）需要它 -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security-oauth2-authorization-server</artifactId>
